@@ -9,7 +9,8 @@ for x in xrange(1,100000):
     d = int(s.readline()) # Sets the un-calibrated distanc
     #print d
     distance = -1.0284880932 *np.log (d) + 5.429368820
-    print distance
+    print distance * 100,
+    print "cm"
 
 
 
