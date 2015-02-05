@@ -58,6 +58,7 @@ void loop(){
                         // End value must be related somehow
     {   
         Print_Pos();
+        top_ser.write(pos_top);
         switch( pos_top%2) // Should check to see if this works
         {
             case 0: Sweep_Right(); break;
