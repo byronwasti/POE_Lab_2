@@ -1,8 +1,8 @@
 import serial
 import numpy as np
-from scatter3D import Plot3D
 
 # Sets up the serial input
+'''
 s = serial.Serial('/dev/ttyACM0',9600,timeout=5)
 
 value = []
@@ -17,13 +17,16 @@ for x in xrange(1,1000):
     print "cm"
 
 Plot3D( [value,value,value])
+'''
 
 def ReadSerial( points ):
-    s = int(serial.Serial('/dev/ttyACM0',9600,timeout=5))
+    s = serial.Serial('/dev/ttyACM0',9600,timeout=5)
+    data = []
     for x in xrange(points):
         d = s.readline()
+        data.append(d)
         
-    return [ x, y, z ]
+    return data
 
     
 
