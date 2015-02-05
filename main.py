@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import serial
 
+test_plots = True
+
 def Coord_Transform ( d, theta, phi):
     x = []
     y = []
     z = []
-    #print len(d), len(theta), len(phi)
+
     for i in range(len(phi)):
         d[i] = np.exp( ( d[i] - 1294.45056) / (-271.03494))
 
@@ -17,15 +19,19 @@ def Coord_Transform ( d, theta, phi):
 
     return x, y, z
 
+def Coord_Transform_Single ( d, theta, phi):
+
+    d = np.exp( ( d - 1294.45056) / (-271.03494))
+
+    z = ( d * np.cos( theta ) )
+    x = ( d * np.sin( theta ) * np.cos ( phi ) )
+    y = ( d * np.sin( theta ) * np.sin ( phi ) )
+
+    return x, y, z
+
 def Plot3D(x, y, z):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
-    '''
-    x =data[0]
-    y =data[1]
-    z =data[2]
-    '''
 
     ax.scatter(x, y, z, c='r', marker='o')
 
@@ -46,8 +52,7 @@ def ReadSerial( points ):
 
 
 def main():
-    points = 500
-
+    points = 5000
     if test_plots == True:
         data = []
         num_lines = sum(1 for line in open('points.txt'))
@@ -56,8 +61,6 @@ def main():
             data.append(f.readline())
     else:
         data = ReadSerial( points )
-
-    #print data
 
     d = []
     t = []
@@ -70,8 +73,7 @@ def main():
             p.append(np.radians(int(data[i][2].strip('\n'))))
         except:
             continue
-    
-    #print  len(d), len(t), len(p)
+
     x, y, z = Coord_Transform( d, t, p )
 
     Plot3D(x, y, z)
