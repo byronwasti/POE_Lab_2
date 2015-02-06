@@ -45,20 +45,29 @@ void setup() {
 
 int Take_Data(){
 
-    // Sweep base servo
-    switch(direction){
-        case 0: bpos += steps; break;
-        case 1: bpos -= steps; break;
+    if (direction == 0){
+        bpos += steps;
+        if (bpos >= bend){
+            direction = 1;
+            tpos += steps;
+        }
     }
-    
-    // Switch sweeping direction && turn up
-    if ( bpos == bstart || bpos == bend ){
-        direction = -direction;
-        tpos += steps;
+    else {
+        bpos -= steps;
+        if (bpos <= bstart){
+            direction = 0;
+            tpos += steps;
+        }
     }
 
     // Return ending condition
-    if (tpos == tend) return 1;
+    if (tpos > tend) return 1;
+
+    // Write positions to servos
+    //bser.write(bpos);
+    //tser.write(tpos);
+
+    delay(15);
 
     // Read sensor for distance
     sensorValue = analogRead(sensorPin);
@@ -93,7 +102,10 @@ void loop() {
         digitalWrite(8,HIGH);
 
         // Write to serial
-        if (ENDER == 1) Serial.print("STOP");
+        if (ENDER == 1) {
+            Serial.println("STOP");
+            delay(1000);
+        }
         else {
             Serial.print(sensorValue);
             Serial.print(",");
