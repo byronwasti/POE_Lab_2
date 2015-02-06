@@ -20,52 +20,95 @@ int tpos = tstart;
 
 // Variable to control how many data points to take
 int steps = 5;
+int direction = 0;
 
+// Sets up whether to start 3D Scanning
+int enabled = 0;
+
+// Sets whether to stop 3D scanning
+int ENDER = 0;
+
+// Typical Setup function
 void setup() {
     
     // Open serial port at 9600 baud rate
     Serial.begin(9600);    
 
-    // Set up pin 3 as output for debugging
-    pinMode(3, OUTPUT);
+    // Set up LED debugging
+    pinMode(7, OUTPUT);
+    pinMode(8,OUTPUT);
 
     // Set up both Servos
     bser.attach(9);
     tser.attach(6);
 }
 
+int Take_Data(){
 
-int enabled = 0;
-int i = 0;
+    // Sweep base servo
+    switch(direction){
+        case 0: bpos += steps; break;
+        case 1: bpos -= steps; break;
+    }
+    
+    // Switch sweeping direction && turn up
+    if ( bpos == bstart || bpos == bend ){
+        direction = -direction;
+        tpos += steps;
+    }
 
+    // Return ending condition
+    if (tpos == tend) return 1;
+
+    // Read sensor for distance
+    sensorValue = analogRead(sensorPin);
+
+    // Continue doing processes
+    return 0;
+}
+
+// Main function which just loops
 void loop() {
-    digitalWrite(3, LOW);
 
-    // send data only when you receive data:
+    // Stops pinging LEDs
+    digitalWrite(7, LOW);
+    digitalWrite(8,LOW);
+
+    // Sends data when pinged
     if (Serial.available() > 0) {
-        Serial.flush();
-        i++;
-        enabled = 1;
+        
+        // Debugging LED, set high when pinged
+        digitalWrite(7, HIGH);
 
-        digitalWrite(3, HIGH);
+        // Flush out all of the "A's" that were being sent
+        Serial.flush();
+
+        // Set up enabled for better delay handling
+        enabled = 1;
 
         // read the incoming byte:
         incomingByte = Serial.read();
 
-        delay(100);
+        // Set ping out pin high
+        digitalWrite(8,HIGH);
 
-        // say what you got:
-        if ( i < 5){
-            Serial.print("I received: ");
-            Serial.println(incomingByte,DEC);
+        // Write to serial
+        if (ENDER == 1) Serial.print("STOP");
+        else {
+            Serial.print(sensorValue);
+            Serial.print(",");
+            Serial.print(bpos);
+            Serial.print(",");
+            Serial.println(tpos);
         }
-        else Serial.println("STOP");
+
+        // Go to next position
+        ENDER = Take_Data();
     }
-    else if (enabled == 1){
-        //Serial.println("Testing");
-        delay(100);
-    }
-    else{
+    else if (enabled == 0){
+
+        // Just sends out 'a' over the serial
+        // This allows for better connection
         Serial.println('a');
         delay(1000);
     }
