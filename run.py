@@ -38,6 +38,9 @@ def main():
         # Set up pinging between the two devices in order to not lose data
         s.write(x)
         var =  s.readline()
+
+        # Sets up ending the loop when the scan is finished
+        if "STOP" in var: break
         
         print i
         print var
