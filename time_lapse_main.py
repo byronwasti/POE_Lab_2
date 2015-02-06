@@ -36,7 +36,7 @@ def Plot3D(x, y, z):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
-    ax.scatter(x, y, z, c='r',marker='.',depthshade=True)
+    ax.scatter(x, y, z, c='r', marker='o')
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
@@ -55,30 +55,50 @@ def ReadSerial( points ):
 
 
 def main():
-    points = 5000
-    if test_plots == True:
-        data = []
-        num_lines = sum(1 for line in open('points.txt'))
-        f = open("points.txt",'r')
-        for i in range(num_lines):
-            data.append(f.readline())
-    else:
-        data = ReadSerial( points )
 
-    d = []
-    t = []
-    p = []
-    for i in range(len(data)):
-        data[i] = data[i].split(',')
-        try:
-            d.append(int(data[i][0]))
-            t.append(np.radians(int(data[i][1])))
-            p.append(np.radians(int(data[i][2].strip('\n'))))
-        except:
-            continue
+    # PLOTTING OVER TIME
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.disable_mouse_rotation()
+    plt.ylim(-150,150)
+    plt.xlim(-150,150)
+    ax.set_zlim(-150,150)
+    #plt.ion()
 
-    x, y, z = Coord_Transform( d, t, p )
+    num_lines = sum(1 for line in open('points.txt'))/2
+    print num_lines
+    f = open("points.txt",'r')
+    Xf = []
+    Yf = []
+    Zf = []
+    
+    Xff = []
+    Yff = []
+    Zff = []
+    for i in range(num_lines):
+        tmp = f.readline()
+        tmp = tmp.split(',')
+        d = int(tmp[0])
+        t = np.radians(int(tmp[1]))
+        p = np.radians(int(tmp[2].strip('\n')))
+        x,y,z = Coord_Transform_Single(d,t,p)
+        Xf.append(x)
+        Yf.append(y)
+        Zf.append(z)
 
-    Plot3D(x, y, z)
+        Xff.append(x)
+        Yff.append(y)
+        Zff.append(z)
+        if i%10 == 0:
+            ax.scatter(Xf, Yf, Zf, c='r', marker='.',depthshade=False)
+            Xf = []
+            Yf = []
+            Zf = []
+            plt.draw()
+            pause(0.01)
+
+    print "Done Plotting!"
+    plt.close()
+    Plot3D(Xff,Yff,Zff)
 
 main()

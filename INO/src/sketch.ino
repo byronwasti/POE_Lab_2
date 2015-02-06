@@ -8,6 +8,7 @@ Servo top_ser;      // Create Vert rotation servo
 
 int pos_bot;
 int pos_top;
+int step_amount = 5;
 
 const int bot_start = 0;
 const int bot_end = 180;
@@ -21,7 +22,7 @@ void setup(){
 }
 
 void Sweep_Right(){
-    for( pos_bot = bot_start; pos_bot <= bot_end; pos_bot++)
+    for( pos_bot = bot_start; pos_bot <= bot_end; pos_bot+= step_amount)
             /// Must figure out actual values for this
     {
         bottom_ser.write(pos_bot);
@@ -31,13 +32,18 @@ void Sweep_Right(){
 }
 
 void Sweep_Left(){
-    for( pos_bot = bot_end; pos_bot >= bot_start; pos_bot--) // This should increment
+    for( pos_bot = bot_end; pos_bot >= bot_start; pos_bot-= step_amount) // This should increment
                                     // the opposite way of Sweep_Right
     {
         bottom_ser.write(pos_bot);
         Print_Pos();
         delay(15);
     }
+}
+
+void Write_Pos(){
+    bottom_ser.write(pos_bot);
+    top_ser.write(pos_top);
 }
 
 void Print_Pos(){
@@ -53,12 +59,10 @@ void Print_Pos(){
 
 void loop(){
 
-    for( pos_top = top_start; pos_top <= top_end; pos_top ++) // WONT WORK
-                        // The initial value must be tan -1 ( 15cm / H(in cm))
-                        // End value must be related somehow
+    for( pos_top = top_start; pos_top <= top_end; pos_top += step_amount)
     {   
         Print_Pos();
-        top_ser.write(pos_top);
+        Write_Pos();
         switch( pos_top%2) // Should check to see if this works
         {
             case 0: Sweep_Right(); break;
