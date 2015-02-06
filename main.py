@@ -1,7 +1,9 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from pylab import *
 import numpy as np
 import serial
+from time import sleep
 
 test_plots = True
 
@@ -29,9 +31,10 @@ def Coord_Transform_Single ( d, theta, phi):
 
     return x, y, z
 
+
 def Plot3D(x, y, z):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = plt.axes(projection='3d')
 
     ax.scatter(x, y, z, c='r', marker='o')
 
@@ -52,6 +55,7 @@ def ReadSerial( points ):
 
 
 def main():
+    '''
     points = 5000
     if test_plots == True:
         data = []
@@ -77,5 +81,31 @@ def main():
     x, y, z = Coord_Transform( d, t, p )
 
     Plot3D(x, y, z)
+    '''
+
+    # PLOTTING OVER TIME
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    #plt.ion()
+
+    num_lines = sum(1 for line in open('points.txt'))/2
+    print num_lines
+    f = open("points.txt",'r')
+    for i in range(num_lines):
+        tmp = f.readline()
+        tmp = tmp.split(',')
+        d = int(tmp[0])
+        t = np.radians(int(tmp[1]))
+        p = np.radians(int(tmp[2].strip('\n')))
+        x,y,z = Coord_Transform_Single(d,t,p)
+
+        ax.scatter(x, y, z, c='r', marker='o')
+        print i
+        if i%115 == 0:
+            plt.draw()
+            pause(0.01)
+
+    print "Done Plotting!"
+    plt.show()
 
 main()
