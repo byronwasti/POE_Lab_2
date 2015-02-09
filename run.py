@@ -5,7 +5,7 @@ import numpy as np
 import serial
 from time import sleep
 
-Time_Plot = False
+Time_Plot = True
 
 def Coord_Transform_Single ( data):
     d = data[0]

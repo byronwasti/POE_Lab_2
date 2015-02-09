@@ -28,6 +28,9 @@ int enabled = 0;
 // Sets whether to stop 3D scanning
 int ENDER = 0;
 
+// How long to wait for the servo to reach position
+int delayer = 150;
+
 // Typical Setup function
 void setup() {
     
@@ -64,10 +67,10 @@ int Take_Data(){
     if (tpos > tend) return 1;
 
     // Write positions to servos
-    //bser.write(bpos);
-    //tser.write(tpos);
+    bser.write(bpos);
+    tser.write(tpos);
 
-    delay(15);
+    delay(delayer);
 
     // Read sensor for distance
     sensorValue = analogRead(sensorPin);
