@@ -3,23 +3,28 @@
 int incomingByte = 0;   // for incoming serial data
 int sensorPin = A0;
 int sensorValue = 0;
+int sensorValue1 = 0;
+int sensorValue2 = 0;
+int sensorValue3 = 0;
+int sensorValue4 = 0;
+int sensorValue5 = 0;
 
 // Creating the bottom and top servos
 Servo bser;
 Servo tser; 
 
 // Giving these initial values
-const int bstart = 0;
-const int bend = 180;
-const int tstart = 0;
-const int tend = 180;
+const int bstart = 65; //43
+const int bend = 125; //143
+const int tstart = 52;
+const int tend = 110;
 
 // Setting up variables to hold servo positions
 int bpos = bstart;
 int tpos = tstart;
 
 // Variable to control how many data points to take
-int steps = 5;
+int steps = 1;
 int direction = 0;
 
 // Sets up whether to start 3D Scanning
@@ -29,7 +34,7 @@ int enabled = 0;
 int ENDER = 0;
 
 // How long to wait for the servo to reach position
-int delayer = 150;
+int delayer = 60;
 
 // Typical Setup function
 void setup() {
@@ -40,6 +45,9 @@ void setup() {
     // Set up LED debugging
     pinMode(7, OUTPUT);
     pinMode(8,OUTPUT);
+
+    // Set kill button
+    pinMode(2, INPUT_PULLUP);
 
     // Set up both Servos
     bser.attach(9);
@@ -73,7 +81,19 @@ int Take_Data(){
     delay(delayer);
 
     // Read sensor for distance
-    sensorValue = analogRead(sensorPin);
+    sensorValue1 = analogRead(sensorPin);
+    delay(15);
+    sensorValue2 = analogRead(sensorPin);
+    delay(15);
+    sensorValue3 = analogRead(sensorPin);
+    delay(15);
+    sensorValue4 = analogRead(sensorPin);
+    delay(15);
+    sensorValue5 = analogRead(sensorPin);
+
+
+    sensorValue = (sensorValue + sensorValue2 + sensorValue3 + sensorValue4 + sensorValue5)/5;
+    
 
     // Continue doing processes
     return 0;
@@ -119,6 +139,7 @@ void loop() {
 
         // Go to next position
         ENDER = Take_Data();
+        if ( digitalRead(2) == 0 ) ENDER = 1;
     }
     else if (enabled == 0){
 

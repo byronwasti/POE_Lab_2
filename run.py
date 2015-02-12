@@ -5,18 +5,20 @@ import numpy as np
 import serial
 from time import sleep
 
-Time_Plot = True
+Time_Plot = False
 
 def Coord_Transform_Single ( data):
     d = data[0]
     theta = data[1]
     phi = data[2]
 
-    d = np.exp( ( d - 1294.45056) / (-271.03494))
+    #d = np.exp( ( d - 1294.45056) / (-271.03494))
+    d = np.exp( ( d - 1416.4651589499) / ( -301.2902022911))
+    if d > 60: return 0
 
     z = ( d * np.cos( theta ) )
     x = ( d * np.sin( theta ) * np.cos ( phi ) )
-    y = ( d * np.sin( theta ) * np.sin ( phi ) )
+    y = -( d * np.sin( theta ) * np.sin ( phi ) )
 
     return x, y, z
 
@@ -27,6 +29,7 @@ def Coord_Transform ( d, theta, phi):
 
     for i in range(len(phi)):
         d[i] = np.exp( ( d[i] - 1294.45056) / (-271.03494))
+        if d[i] > 60: continue
 
         z.append( d[i] * np.cos( theta[i] ) )
         x.append( d[i] * np.sin( theta[i] ) * np.cos ( phi[i] ) )
@@ -66,6 +69,7 @@ def main():
 
     # Array that will store all of the data
     data = []
+    DATA_EXPORT = []
     
     # Array that will store temporary data for 
     # plotting in time
@@ -110,6 +114,7 @@ def main():
     
         # Start storing the values taken in
         data.append(tmp)
+        DATA_EXPORT.append(tmp)
 
         # Plotting over time
         if Time_Plot:
@@ -120,7 +125,7 @@ def main():
             z.append(tmpz)
 
             if len(x) % 20 == 0:
-                ax.scatter(x,y,z,c='r',marker='.',depthshade=False)
+                ax.scatter(y,x,z,c='r',marker='.',depthshade=False)
                 x = []
                 y = []
                 z = []
@@ -129,15 +134,20 @@ def main():
 
     print "Ended data collection"
     if Time_Plot: plt.close()
+    f = open('OUTPUT.txt','w')
+    for i in DATA_EXPORT:
+        f.write(i)
 
     x = []
     y = []
     z = []
     for i in data:
-        tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( i ) )
-        x.append(tmpx)
-        y.append(tmpy)
-        z.append(tmpz) 
-    Plot3D(x,y,z)
+        try:
+            tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( i ) )
+            x.append(tmpx)
+            y.append(tmpy)
+            z.append(tmpz) 
+        except: continue
+    Plot3D(z,y,x)
     
 main()
