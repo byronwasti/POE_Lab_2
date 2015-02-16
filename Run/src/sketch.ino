@@ -133,10 +133,14 @@ void loop() {
 
         // Write to serial
         if (ENDER == 1) {
+            
+            // End of sweep
             Serial.println("STOP");
             delay(1000);
         }
         else {
+
+            // Print out data
             Serial.print(sensorValue);
             Serial.print(",");
             Serial.print(bpos);
@@ -144,14 +148,16 @@ void loop() {
             Serial.println(tpos);
         }
 
-        // Go to next position
+        // Go to next position, returns 1 if finished
         ENDER = Take_Data();
+
+        // If button is pressed exit program
         if ( digitalRead(2) == 0 ) ENDER = 1;
     }
     else if (enabled == 0){
 
         // Just sends out 'a' over the serial
-        // This allows for better connection
+        // until ping-ed
         Serial.println('a');
         delay(1000);
     }
