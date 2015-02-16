@@ -16,8 +16,8 @@ def Coord_Transform ( d, theta, phi):
         d[i] = np.exp( ( d[i] - 1294.45056) / (-271.03494))
 
         z.append( d[i] * np.cos( theta[i] ) )
-        x.append( d[i] * np.sin( theta[i] ) * np.cos ( phi[i] ) )
-        y.append( d[i] * np.sin( theta[i] ) * np.sin ( phi[i] ) )
+        x.append( -d[i] * np.sin( theta[i]  ) * np.cos ( phi[i] ) )
+        y.append( d[i] * np.sin( theta[i] ) * np.sin ( phi[i] + (pi/180 * 8)) )
 
     return x, y, z
 
@@ -55,11 +55,12 @@ def ReadSerial( points ):
 
 
 def main():
+    name = 'OUTPUT.txt'
     points = 5000
     if test_plots == True:
         data = []
-        num_lines = sum(1 for line in open('points.txt'))
-        f = open("points.txt",'r')
+        num_lines = sum(1 for line in open(name))
+        f = open(name,'r')
         for i in range(num_lines):
             data.append(f.readline())
     else:
@@ -79,6 +80,6 @@ def main():
 
     x, y, z = Coord_Transform( d, t, p )
 
-    Plot3D(x, y, z)
+    Plot3D(z, y, x)
 
 main()
