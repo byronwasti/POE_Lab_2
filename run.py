@@ -12,28 +12,17 @@ def Coord_Transform_Single ( data):
     theta = data[1]
     phi = data[2]
 
-    #d = np.exp( ( d - 1294.45056) / (-271.03494))
+    # Converts output of Arduino to distance based on
+    # equation found from calibration
     d = np.exp( ( d - 1416.4651589499) / ( -301.2902022911))
+
+    # Cuts out the points that are too far away/noisy
     if d > 60: return 0
 
+    # Standard spherical to cartesian
     z = ( d * np.cos( theta ) )
     x = ( d * np.sin( theta ) * np.cos ( phi ) )
-    y = -( d * np.sin( theta ) * np.sin ( phi ) )
-
-    return x, y, z
-
-def Coord_Transform ( d, theta, phi):
-    x = []
-    y = []
-    z = []
-
-    for i in range(len(phi)):
-        d[i] = np.exp( ( d[i] - 1294.45056) / (-271.03494))
-        if d[i] > 60: continue
-
-        z.append( d[i] * np.cos( theta[i] ) )
-        x.append( d[i] * np.sin( theta[i] ) * np.cos ( phi[i] ) )
-        y.append( d[i] * np.sin( theta[i] ) * np.sin ( phi[i] ) )
+    y = -( d * np.sin( theta ) * np.sin ( phi + (pi/180 * 8)) )
 
     return x, y, z
 
@@ -114,9 +103,8 @@ def main():
     
         # Start storing the values taken in
         data.append(tmp)
-        DATA_EXPORT.append(tmp)
 
-        # Plotting over time
+        # Live plotting
         if Time_Plot:
             tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( tmp))
 
@@ -124,6 +112,7 @@ def main():
             y.append(tmpy)
             z.append(tmpz)
 
+            # It plots every 20 points collected
             if len(x) % 20 == 0:
                 ax.scatter(y,x,z,c='r',marker='.',depthshade=False)
                 x = []
@@ -134,20 +123,21 @@ def main():
 
     print "Ended data collection"
     if Time_Plot: plt.close()
-    f = open('OUTPUT.txt','w')
-    for i in DATA_EXPORT:
-        f.write(i)
 
     x = []
     y = []
     z = []
     for i in data:
+        
+        # In case there was an error thrown by the Arduino
+        # which is rare, but has happened
         try:
             tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( i ) )
             x.append(tmpx)
             y.append(tmpy)
             z.append(tmpz) 
         except: continue
+
     Plot3D(z,y,x)
     
 main()

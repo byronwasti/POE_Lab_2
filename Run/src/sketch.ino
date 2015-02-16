@@ -1,7 +1,11 @@
 #include <Servo.h>
 
-int incomingByte = 0;   // for incoming serial data
+// for incoming serial data
+int incomingByte = 0;   
+
 int sensorPin = A0;
+
+// Setting up variables for taking average reading
 int sensorValue = 0;
 int sensorValue1 = 0;
 int sensorValue2 = 0;
@@ -13,9 +17,9 @@ int sensorValue5 = 0;
 Servo bser;
 Servo tser; 
 
-// Giving these initial values
-const int bstart = 65; //43
-const int bend = 125; //143
+// Giving initial and end points for servos
+const int bstart = 65; 
+const int bend = 125; 
 const int tstart = 52;
 const int tend = 110;
 
@@ -25,7 +29,6 @@ int tpos = tstart;
 
 // Variable to control how many data points to take
 int steps = 1;
-int direction = 0;
 
 // Sets up whether to start 3D Scanning
 int enabled = 0;
@@ -46,7 +49,7 @@ void setup() {
     pinMode(7, OUTPUT);
     pinMode(8,OUTPUT);
 
-    // Set kill button
+    // Set kill button with internal pullup
     pinMode(2, INPUT_PULLUP);
 
     // Set up both Servos
@@ -56,6 +59,10 @@ void setup() {
 
 int Take_Data(){
 
+    // Which way the gimbal is panning
+    static int direction = 0;
+
+    // Setting up movements
     if (direction == 0){
         bpos += steps;
         if (bpos >= bend){
