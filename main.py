@@ -18,7 +18,7 @@ def Coord_Transform ( d, theta, phi):
     for i in range(len(phi)):
         d[i] = np.exp( ( d[i] - 1294.45056) / (-271.03494))
 
-        if d[i] > 35: continue # and d[i] < 50: continue
+        #if d[i] > 35: continue # and d[i] < 50: continue
         '''
         if d[i] >= 50:
             zb.append( d[i] * np.cos( theta[i] ) )
@@ -95,6 +95,7 @@ def main():
     X = []
     Y = []
     Z = []
+    '''
     for i in xrange(len(x)):
         for j in xrange(len(x)):
             if x[i] == x[j] and y[i] == y[j] and z[i] == z[j]:
@@ -105,7 +106,6 @@ def main():
                 Y.append(y[i])
                 Z.append(z[i])
                 break
-    '''
     fig = plt.figure()
     ax = plt.axes(projection='3d')
 
@@ -119,8 +119,8 @@ def main():
     plt.show()
     '''
 
-    #Plot3D(z, y, x, 'r', 0)
+    Plot3D(z, y, x, 'r', 0)
     #Plot3D(zb, yb, xb, 'b', 1)
-    Plot3D(Z, Y, X, 'r', 0)
+    #Plot3D(Z, Y, X, 'r', 0)
 
 main()

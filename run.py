@@ -5,7 +5,7 @@ import numpy as np
 import serial
 from time import sleep
 
-Time_Plot = False
+Time_Plot = True
 
 def Coord_Transform_Single ( data):
     d = data[0]
@@ -106,7 +106,9 @@ def main():
 
         # Live plotting
         if Time_Plot:
-            tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( tmp))
+            try:
+                tmpx, tmpy, tmpz = Coord_Transform_Single( Parse_Data( tmp))
+            except: continue
 
             x.append(tmpx)
             y.append(tmpy)
@@ -114,7 +116,7 @@ def main():
 
             # It plots every 20 points collected
             if len(x) % 20 == 0:
-                ax.scatter(y,x,z,c='r',marker='.',depthshade=False)
+                ax.scatter(z,y,x,c='r',marker='.',depthshade=False)
                 x = []
                 y = []
                 z = []
